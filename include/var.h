@@ -253,7 +253,7 @@ namespace var_typeconversion {
 		int itnum = 0;
 		const int size = obj.size();
 		for(auto el : obj) {
-			ret += "{" + el.first + ": " + el.second.toString() + "}";
+			ret += "{" + el.first + ": " + el.second.toReadableString() + "}";
 			if(itnum!=size-1) ret += ", ";
 			++itnum;
 		}
@@ -273,7 +273,7 @@ namespace var_typeconversion {
 		const int len = obj.size();
 		string ret = "{";
 		for(int it=0;it<len;++it) {
-			ret += obj[it].toString();
+			ret += obj[it].toReadableString();
 			if(it!=len-1) ret += ", ";
 		}
 		ret += "}";

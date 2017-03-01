@@ -8,31 +8,31 @@
 
 NAMESPACE_VAR_BEGIN__
 
-inline static var var_math::abs(var x) {
-  const vartypeid t = x.getType();
-  return var(  std::abs((double)x)  ).castToType(t);
+inline var var_math::abs(var x) {
+  const var::vartypeid t = x.getType();
+  return var(  std::abs((double)x)  ).asType(t);
 }
 
-inline static var var_math::sqrt(var x) {
-  const vartypeid t = x.getType();
-  return var(  std::sqrt((double)x)  ).castToType(t);
+inline var var_math::sqrt(var x) {
+  const var::vartypeid t = x.getType();
+  return var(  std::sqrt((double)x)  ).asType(t);
 }
 
-inline static var var_math::pow(var x, var y) {
+inline var var_math::pow(var x, var y) {
   return var::Null;
 }
 
-inline static var var_math::sin(var x) {
-  const vartypeid t = x.getType();
-  return var(  std::sin((double)x)  ).castToType(t);
+inline var var_math::sin(var x) {
+  const var::vartypeid t = x.getType();
+  return var(  std::sin((double)x)  ).asType(t);
 }
 
-inline static var var_math::cos(var x) {
-  const vartypeid t = x.getType();
-  return var(  std::cos((double)x)  ).castToType(t);
+inline var var_math::cos(var x) {
+  const var::vartypeid t = x.getType();
+  return var(  std::cos((double)x)  ).asType(t);
 }
 
-inline static var var_math::neg(var x) {
+inline var var_math::neg(var x) {
   return (-x);
 }
 

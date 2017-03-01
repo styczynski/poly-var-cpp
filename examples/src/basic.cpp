@@ -11,9 +11,10 @@ int main(void) {
 		#define vardbg(x) cout<<varstr(x)<<" := "<<(x)<<"\n";
 		#define varstr(x) #x
 
-		var x = 0;
 
-		cout << var_math.cos(x) << "\n";
+		var x = "3.14";
+
+		cout << var_math::cos(x) << "\n";
 
 		/*var nan = var::Hashmap;
 		nan["foo"] = "bar";

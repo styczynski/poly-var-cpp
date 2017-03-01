@@ -1,7 +1,7 @@
 ECHO := @
 
 CC := $(ECHO)g++
-CFLINKS := -pthread -lgdi32 -luser32 -lpthread
+CFLINKS := 
 CEFLAGS_DEBUG := -pthread -lm -std=c++11 -O2 -Wall -W -Wextra -Wdouble-promotion -pedantic -Wmissing-include-dirs -Wunused -Wuninitialized -Wextra -Wstrict-overflow=3 -Wtrampolines -Wfloat-equal -Wconversion -Wmissing-field-initializers -Wno-multichar -Wpacked -Winline -Wshadow
 CEFLAGS_RELEASE := -pthread -lm -std=c++11 -O3 -w
 CEFLAGS := $(CEFLAGS_RELEASE)
