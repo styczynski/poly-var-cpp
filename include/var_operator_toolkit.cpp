@@ -140,14 +140,15 @@
 		return in;
 	}
 
-	var operator "" _var( const char* value ){
+
+	var operator"" _var( const char* value, unsigned int len ){
   		return var(string(value));
 	}
 
-	var operator "" _var( long double value ){
+	var operator"" _var( long double value ){
   		return var((double)value);
 	}
 
-	var operator "" _var( unsigned long long int value ){
+	var operator"" _var( unsigned long long int value ){
   		return var((long long)value);
 	}

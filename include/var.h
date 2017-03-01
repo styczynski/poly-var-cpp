@@ -348,6 +348,14 @@ namespace var_typeconversion {
 		return var(t);
 	}
 
+	inline var var::createHashmap(var l) {
+		var ret = var::Hashmap;
+		l.foreach([&ret](var element)->void {
+			ret[element[0].toString()] = element[1];
+		});
+		return ret;
+	}
+
 	const var var::Null = var::newNull();
 	const var var::NaN = var::newNaN();
 	const var var::Infinity = var::newInfinity();
@@ -738,6 +746,18 @@ namespace var_typeconversion {
 	inline var::operator char() {
 		return toChar();
  }
+
+	template <typename T>
+	inline var::operator T*() {
+		return (T*)toLongLong();
+	}
+
+	template <typename T>
+	inline var::operator T() {
+		cout<<"[WARN] Experimental generic CONVERSION WAS USED! [var->T] :(\n";cout.flush();
+		return (T::fromVar(*this));
+	}
+
 
 	inline var::vartypeid var::getType() const {
 		return type;
@@ -1585,6 +1605,18 @@ namespace var_typeconversion {
 
 	inline void var::operator=(var v) {
 		setTo(v);
+	}
+
+	template <typename T>
+	inline void var::operator=(T* x) {
+		assignValue((long long)x, VAR_TYPE_LONG_LONG);
+	}
+
+	template <typename T>
+	inline void var::operator=(T x) {
+		cout<<"[WARN] Experimental generic CONVERSION WAS USED! [T->var] :(\n";cout.flush();
+		setTo(T::toVar(x));
+
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////

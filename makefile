@@ -1,7 +1,7 @@
 ECHO := @
 
 CC := $(ECHO)g++
-CFLINKS := 
+CFLINKS :=
 CEFLAGS_DEBUG := -pthread -lm -std=c++11 -O2 -Wall -W -Wextra -Wdouble-promotion -pedantic -Wmissing-include-dirs -Wunused -Wuninitialized -Wextra -Wstrict-overflow=3 -Wtrampolines -Wfloat-equal -Wconversion -Wmissing-field-initializers -Wno-multichar -Wpacked -Winline -Wshadow
 CEFLAGS_RELEASE := -pthread -lm -std=c++11 -O3 -w
 CEFLAGS := $(CEFLAGS_RELEASE)
@@ -15,6 +15,9 @@ EXAMPLES_MADE_NUMBER := %
 
 CC_FLAGS=-I./include $(CEFLAGS)
 LF_FLAGS=$(CFLINKS)
+
+$(mkdir ./examples/bin)
+
 
 ifneq (,$(findstring run-example-,$(MAKECMDGOALS)))
 RUN_EXAMPLE_NAME=$(subst run-example-,,$(MAKECMDGOALS))

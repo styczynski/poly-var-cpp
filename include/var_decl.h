@@ -265,6 +265,8 @@ class var {
 		inline static var newInfinity();
 		inline static var newHashmap();
 
+		inline static var createHashmap(var l);
+
 		const static var Null;
 		const static var NaN;
 		const static var Infinity;
@@ -354,6 +356,8 @@ class var {
 		inline operator long long();
 		/** Converts variable to char. **/
 		inline operator char();
+		template <typename T> inline operator T*();
+		template <typename T> inline operator T();
 
 		/** Obtains the type of the variable (var::vartypeid). **/
 		inline vartypeid getType() const;
@@ -519,6 +523,8 @@ class var {
 		inline void operator=(char val[]);
 		inline void operator=(const char val[]);
 		inline void operator=(var v);
+		template <typename T> inline void operator=(T* x);
+		template <typename T> inline void operator=(T x);
 
 		inline var& operator*();
 		//inline var operator&();
