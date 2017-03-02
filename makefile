@@ -36,7 +36,7 @@ endif
 
 
 help:
-	$(info WACCGL - Windows Advanced Console Componental Graphics Library)
+	$(info poly-vars-cpp - Polymorphic variables implementation in C++)
 	$(info Makefile)
 	$(info To compile all examples use 'make all' or 'make examples' command)
 	$(info To get list of all available examples use 'make run-example' command)

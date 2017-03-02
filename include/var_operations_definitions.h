@@ -39,6 +39,23 @@
 			X2 = X2.dereferenceConst(); \
 		}
 
+	#define autohandle_functions_2(X1, X2, FUNCT) \
+		if(X1.type==VAR_TYPE_FUNCT || X2.type==VAR_TYPE_FUNCT) { \
+			return var_funct_decl({ \
+				const var v1 = X1.apply(args); \
+				const var v2 = X2.apply(args); \
+				return FUNCT(v1.getType(), v1, v2, take_greater_precision_operation); \
+			}); \
+		}
+
+	#define autohandle_functions_1(X1, FUNCT) \
+		if(X1.type==VAR_TYPE_FUNCT) { \
+			return var_funct_decl({ \
+				const var v1 = X1.apply(args); \
+				return FUNCT(v1.getType(), v1); \
+			}); \
+		}
+
 	#define autohandle_Null if(a.isTypeNull() || b.isTypeNull()) return var::newNull();
 	#define autohandle_NaN if(a.isTypeNaN() || b.isTypeNaN()) return var::newNaN();
 	#define autohandle_Infinity if(a.isTypeInfinity() || b.isTypeInfinity()) return var::newInfinity();
@@ -52,6 +69,7 @@
 	inline var var::operator_add( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_add);
 		autohandle_Null
 		autohandle_NaN
 		autohandle_Infinity
@@ -99,6 +117,7 @@
 	inline var var::operator_sub( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_sub);
 		autohandle_Null
 		autohandle_NaN
 
@@ -147,6 +166,7 @@
 	inline var var::operator_mul( var::var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_mul);
 		autohandle_Null
 		autohandle_NaN
 		autohandle_Infinity
@@ -197,6 +217,7 @@
 	inline var var::operator_div( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_div);
 		autohandle_Null
 		autohandle_NaN
 
@@ -236,6 +257,7 @@
 	inline var var::operator_neg( var::vartypeid t, var a ) {
 
 		autohandle_references_1(a);
+		autohandle_functions_1(a, var::operator_neg);
 		autohandle_Null_single
 		autohandle_NaN_single
 		autohandle_Infinity_single
@@ -260,6 +282,7 @@
 	inline var var::operator_or( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_or);
 		autohandle_Null
 		autohandle_NaN
 		autohandle_Infinity
@@ -270,6 +293,7 @@
 	inline var var::operator_and( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_and);
 		autohandle_Null
 		autohandle_NaN
 		autohandle_Infinity
@@ -281,6 +305,7 @@
 	inline var var::operator_mod( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_mod);
 		autohandle_Null
 		autohandle_NaN
 
@@ -323,6 +348,7 @@
 	inline var var::operator_shift_left( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_shift_left);
 		autohandle_Null
 		autohandle_NaN
 		autohandle_Infinity
@@ -360,6 +386,7 @@
 	inline var var::operator_shift_right( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_shift_right);
 		autohandle_Null
 		autohandle_NaN
 		autohandle_Infinity
@@ -396,6 +423,7 @@
 	inline var var::operator_bitwise_not( var::vartypeid t, var a ) {
 
 		autohandle_references_1(a);
+		autohandle_functions_1(a, var::operator_bitwise_not);
 		autohandle_Null_single
 		autohandle_NaN_single
 		autohandle_Infinity_single
@@ -424,6 +452,7 @@
 	inline var var::operator_bitwise_and( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_bitwise_and);
 		autohandle_Null
 		autohandle_NaN
 		autohandle_Infinity
@@ -461,6 +490,7 @@
 	inline var var::operator_bitwise_or( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_bitwise_or);
 		autohandle_Null
 		autohandle_NaN
 		autohandle_Infinity
@@ -498,6 +528,7 @@
 	inline var var::operator_bitwise_xor( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_bitwise_xor);
 		autohandle_Null
 		autohandle_NaN
 		autohandle_Infinity
@@ -558,6 +589,7 @@
 	inline var var::operator_comparsion_less( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_comparsion_less);
 
 		if(a.getType() == VAR_TYPE_INFINITY || b.getType() == VAR_TYPE_INFINITY) return false;
 		if(a.getType() == VAR_TYPE_NAN || b.getType() == VAR_TYPE_NAN) return false;
@@ -589,6 +621,7 @@
 	inline var var::operator_comparsion_more( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
+		autohandle_functions_2(a, b, var::operator_comparsion_more);
 
 		if(a.getType() == VAR_TYPE_INFINITY || b.getType() == VAR_TYPE_INFINITY) return false;
 		if(a.getType() == VAR_TYPE_NAN || b.getType() == VAR_TYPE_NAN) return false;

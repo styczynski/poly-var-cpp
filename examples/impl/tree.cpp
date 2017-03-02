@@ -14,7 +14,7 @@ int main(void) {
 		var a = nan.ref();
 		var ref = {a.ref(), 42};
 		var ref2 = {ref.ref(), 69, 25};
-		var tree = { {{}, 12, {}}, 42, {{}, 69, {}} };
+		var tree = { {{}, 12, {}}, "ala", {{}, 69, {}} };
 		vardbg(nan);
 		vardbg(ref2);
 

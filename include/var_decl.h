@@ -142,6 +142,7 @@
 #include <map>
 #include <algorithm>
 #include <functional>
+#include <iterator>
 #include <cstring>
 #include <cstdlib>
 using namespace std;
@@ -158,6 +159,7 @@ class var {
 		typedef unsigned short vartypeid;
 		typedef std::vector<var> varray;
 		typedef std::map<std::string, var> h_varray;
+		typedef std::function<var(var)> var_funct;
 
 
 	private:
@@ -184,6 +186,7 @@ class var {
 		static const vartypeid VAR_TYPE_STRING     = 50;
 		static const vartypeid VAR_TYPE_ARRAY      = 100;
 		static const vartypeid VAR_TYPE_HASHMAP    = 101;
+		static const vartypeid VAR_TYPE_FUNCT      = 200;
 
 		//TODO: Make references work!
 		#define reference_decode(OP, RET) if(type == VAR_TYPE_REFERENCE) { var value (*((*var) data)); OP; return RET; }
@@ -247,7 +250,6 @@ class var {
 
 		inline static var& operator_iterate( vartypeid t, var a, int index );
 
-
 	public:
 
 
@@ -264,6 +266,50 @@ class var {
 		inline static var newNaN();
 		inline static var newInfinity();
 		inline static var newHashmap();
+		inline static var newFunction();
+		inline static var newConstFunction(const var x);
+		inline static var newIdFunction();
+
+
+		inline static var newWrapperProcedure( void(*farg)() );
+
+		template<typename Tret>
+		inline static var newWrapperFunction0( Tret(*farg)() );
+
+		template<typename Tret, typename T1>
+		inline static var newWrapperFunction1( Tret(*const farg)(T1) );
+
+		template<typename Tret, typename T1, typename T2>
+		inline static var newWrapperFunction2( Tret(*farg)(T1, T2) );
+
+		template<typename Tret, typename T1, typename T2, typename T3>
+		inline static var newWrapperFunction3( Tret(*farg)(T1, T2, T3) );
+
+		template<typename Tret, typename T1, typename T2, typename T3, typename T4>
+		inline static var newWrapperFunction4( Tret(*farg)(T1, T2, T3, T4) );
+
+
+
+
+		/*
+		inline static var newWrapperProcedure(function<void()>& farg);
+
+		template<typename Tret>
+		inline static var newWrapperFunction0(function<Tret()>& farg);
+
+		template<typename Tret, typename T1>
+		inline static var newWrapperFunction1(function<Tret(T1)>& farg);
+
+		template<typename Tret, typename T1, typename T2>
+		inline static var newWrapperFunction2(function<Tret(T1, T2)>& farg);
+
+		template<typename Tret, typename T1, typename T2, typename T3>
+		inline static var newWrapperFunction3(function<Tret(T1, T2, T3)>& farg);
+
+		template<typename Tret, typename T1, typename T2, typename T3, typename T4>
+		inline static var newWrapperFunction4(function<Tret(T1, T2, T3, T4)>& farg);
+		*/
+
 
 		inline static var createHashmap(var l);
 
@@ -280,6 +326,8 @@ class var {
 		const static var LongLong;
 		const static var Short;
 		const static var Hashmap;
+		const static var Function;
+		const static var IdFunction;
 
 		/** Creates empty var of UNKNOWN type **/
 		var( );
@@ -287,6 +335,7 @@ class var {
 		~var( );
 		/** Creates copy of variable from the existing one. **/
 		var( const var& v );
+
 		/** Creates variable from any supported type of data. **/
 		template <typename T> var( T from );
 		/** Created variable of ARRAY type from the given initialization list. **/
@@ -323,6 +372,8 @@ class var {
 		/** Converts variable to hashmap (var::h_varray). **/
 		inline h_varray toHashmap() const;
 
+		inline var_funct toFunction() const;
+
 		/** Obtains the data pointer from variable in the format of integer pointer. **/
 		inline operator int*();
 		/** Obtains the data pointer from variable in the format of integer pointer. **/
@@ -342,6 +393,8 @@ class var {
 		/** Obtains the data pointer from variable in the format of hashmap pointer (var::h_varray*). **/
 		inline operator h_varray*();
 
+		inline operator var_funct*();
+
 		/** Converts variable to int. **/
 		inline operator int();
 		/** Converts variable to double. **/
@@ -356,6 +409,9 @@ class var {
 		inline operator long long();
 		/** Converts variable to char. **/
 		inline operator char();
+
+		inline operator var_funct();
+
 		template <typename T> inline operator T*();
 		template <typename T> inline operator T();
 
@@ -387,6 +443,8 @@ class var {
 		inline bool isTypeNaN() const;
 		/** Checks if the variable is infinity. **/
 		inline bool isTypeInfinity() const;
+
+		inline bool isTypeFunction() const;
 		/** Checks if the variable is the same type as argument var. **/
 		inline bool isTypeReference() const;
 		inline bool isTypeOf(var v) const;
@@ -407,6 +465,7 @@ class var {
 		inline var& castToChar();
 		inline var& castToArray();
 		inline var& castToHashmap();
+		inline var& castToFunction();
 		inline var asInt();
 		inline var asDouble();
 		inline var asFloat();
@@ -416,6 +475,7 @@ class var {
 		inline var asChar();
 		inline var asArray();
 		inline var asHashmap();
+		inline var asFunction();
 		inline var asType(vartypeid t);
 		inline var asTypeOf(var v) const;
 		template <typename T> inline void assignPointer(T* ptr);
@@ -471,6 +531,8 @@ class var {
 		inline bool hasCommonElementsWith(var v);
 		inline bool has(var v);
 		inline bool isSameSet(var v);
+		inline var apply(var args) const;
+		inline var apply() const;
 
 		inline bool equals(var v) const;
 		inline bool dEquals(var v) const;
@@ -502,6 +564,9 @@ class var {
 		inline void eachConvertToFloat();
 		inline void eachConvertToArray();
 		inline void eachConvertToHashmap();
+		inline void eachConvertToFunction();
+		inline void eachApply(var args);
+		inline void eachApply();
 
 		inline static varray doForeach(function<var(var)> callback, varray obj);
 		inline static h_varray doForeach(function<var(var, var)> callback, h_varray obj);
@@ -516,6 +581,7 @@ class var {
 		inline void operator=(bool val);
 		inline void operator=(long long val);
 		inline void operator=(char val);
+		inline void operator=(var_funct val);
 		template <typename T> inline void operator=(std::initializer_list<T> l);
 		template <typename T, int N> inline void operator=(const T arr[N]);
 		template <typename T1, typename T2> inline void operator=(map<T1, T2> arr);

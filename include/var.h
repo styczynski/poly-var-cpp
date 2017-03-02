@@ -4,6 +4,10 @@
 #define NAMESPACE_VAR_BEGIN__ namespace variable {
 #define NAMESPACE_VAR_END__ };
 
+//define var_funct_decl [&](var args)->var
+#define var_funct_decl(CODE) ((std::function<var(var)>)([&](var args)->var CODE))
+
+
 #include "var_custom_objects.h"
 #include "var_decl.h"
 #include "var_basic_utilities.cpp"
@@ -58,6 +62,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_LONG_LONG: return "long long";
 			case VAR_TYPE_ARRAY: return "array";
 			case VAR_TYPE_HASHMAP: return "hashtable";
+			case VAR_TYPE_FUNCT: return "function";
 
 			//case VAR_TYPE_OBJECT: return "object";
 			default: return "undefined{vartypeid="+var_typeconversion::genericTypeToString<vartypeid>(type)+"}";
@@ -271,12 +276,12 @@ namespace var_typeconversion {
 
 	inline string var::VarrayToReadableString(varray obj) {
 		const int len = obj.size();
-		string ret = "{";
+		string ret = "[";
 		for(int it=0;it<len;++it) {
 			ret += obj[it].toReadableString();
 			if(it!=len-1) ret += ", ";
 		}
-		ret += "}";
+		ret += "]";
 		return ret;
 	}
 
@@ -348,6 +353,125 @@ namespace var_typeconversion {
 		return var(t);
 	}
 
+	inline var var::newFunction() {
+		var_funct f = var_funct_decl({ return var::Null; });
+		return var(f);
+	}
+
+	inline var var::newConstFunction(const var x) {
+		var_funct f = var_funct_decl({ return x; });
+		return var(f);
+	}
+
+	inline var var::newIdFunction() {
+		var_funct f = var_funct_decl({ return args; });
+		return var(f);
+	}
+
+
+	inline var var::newWrapperProcedure( void(*farg)() ) {
+		void(*const f)() = farg;
+		return var((std::function<var(var)>)([f](var args)->var {
+			f();
+			return var::Null;
+		}));
+	};
+
+
+	template<typename Tret>
+	inline var var::newWrapperFunction0( Tret(*farg)() ) {
+		Tret(*const f)() = farg;
+		return var((std::function<var(var)>)([f](var args)->var {
+			return var(f());
+		}));
+	};
+
+	template<typename Tret, typename T1>
+	inline var var::newWrapperFunction1( Tret(*const farg)(T1) ) {
+		Tret(*const f)(T1) = farg;
+		return var((std::function<var(var)>)([f](var args)->var {
+			return var(f( (T1)args[0] ));
+		}));
+	};
+
+	template<typename Tret, typename T1, typename T2>
+	inline var var::newWrapperFunction2( Tret(*farg)(T1, T2) ) {
+		Tret(*const f)(T1, T2) = farg;
+		return var((std::function<var(var)>)([f](var args)->var {
+			return var(f( (T1)args[0], (T2)args[1] ));
+		}));
+	};
+
+	template<typename Tret, typename T1, typename T2, typename T3>
+	inline var var::newWrapperFunction3( Tret(*farg)(T1, T2, T3) ) {
+		Tret(*const f)(T1, T2, T3) = farg;
+		return var((std::function<var(var)>)([f](var args)->var {
+			return var(f( (T1)args[0], (T2)args[1], (T3)args[2] ));
+		}));
+	};
+
+	template<typename Tret, typename T1, typename T2, typename T3, typename T4>
+	inline var var::newWrapperFunction4( Tret(*farg)(T1, T2, T3, T4) ) {
+		Tret(*const f)(T1, T2, T3, T4) = farg;
+		return var((std::function<var(var)>)([f](var args)->var {
+			return var(f( (T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3] ));
+		}));
+	};
+
+
+/*ssss*/
+
+
+
+	/*inline var var::newWrapperProcedure(function<void()> farg) {
+		const auto f = farg;
+		return var(var_funct_decl({
+			f();
+			return var::Null;
+		}));
+	};
+
+	template<typename Tret>
+	inline var var::newWrapperFunction0(function<Tret()> farg) {
+		const auto f = farg;
+		return var(var_funct_decl({
+			return var(f());
+		}));
+	};
+
+	template<typename Tret, typename T1>
+	inline var var::newWrapperFunction1(function<Tret(T1)> farg) {
+		const auto f = farg;
+		return var(var_funct_decl({
+			return var(f( (T1)args[0] ));
+		}));
+	};
+
+	template<typename Tret, typename T1, typename T2>
+	inline var var::newWrapperFunction2(function<Tret(T1, T2)> farg) {
+		const auto f = farg;
+		return var(var_funct_decl({
+			return var(f( (T1)args[0], (T2)args[1] ));
+		}));
+	};
+
+	template<typename Tret, typename T1, typename T2, typename T3>
+	inline var var::newWrapperFunction3(function<Tret(T1, T2, T3)> farg) {
+		const auto f = farg;
+		return var(var_funct_decl({
+			return var(f( (T1)args[0], (T2)args[1], (T3)args[2] ));
+		}));
+	};
+
+	template<typename Tret, typename T1, typename T2, typename T3, typename T4>
+	inline var var::newWrapperFunction4(function<Tret(T1, T2, T3, T4)> farg) {
+		const auto f = farg;
+		return var(var_funct_decl({
+			return var(f( (T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3] ));
+		}));
+	};*/
+
+
 	inline var var::createHashmap(var l) {
 		var ret = var::Hashmap;
 		l.foreach([&ret](var element)->void {
@@ -368,6 +492,8 @@ namespace var_typeconversion {
 	const var var::LongLong = var::newLongLong();
 	const var var::Short = var::newShort();
 	const var var::Hashmap = var::newHashmap();
+	const var var::Function = var::newFunction();
+	const var var::IdFunction = var::newIdFunction();
 
 
 	inline var var::getNull() {
@@ -397,6 +523,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_LONG_LONG: delete (static_cast<long long*>(ptr)); break;
 			case VAR_TYPE_ARRAY: delete (static_cast<varray*>(ptr)); break;
 			case VAR_TYPE_HASHMAP: delete (static_cast<h_varray*>(ptr)); break;
+			case VAR_TYPE_FUNCT: delete (static_cast<var_funct*>(ptr)); break;
 			case VAR_TYPE_NULL: case VAR_TYPE_INFINITY: case VAR_TYPE_NAN: break;
 			default: throw var_exception_no_such_operation("delete [memory dealocation]", static_cast<var*>(a)->getTypeName().c_str());
 		}
@@ -443,6 +570,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_LONG_LONG: assignValue(v.getAutoCastedValue<long long>(), v.type); break;
 			case VAR_TYPE_ARRAY: assignValue(v.getAutoCastedValue<varray>(), v.type); break;
 			case VAR_TYPE_HASHMAP: assignValue(v.getAutoCastedValue<h_varray>(), v.type); break;
+			case VAR_TYPE_FUNCT: assignValue(v.getAutoCastedValue<var_funct>(), v.type); break;
 			case VAR_TYPE_NULL: break;
 			case VAR_TYPE_NAN: break;
 			case VAR_TYPE_INFINITY: break;
@@ -477,6 +605,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_LONG_LONG: assignValue(v.getAutoCastedValue<long long>(), v.type); break;
 			case VAR_TYPE_ARRAY: assignValue(v.getAutoCastedValue<varray>(), v.type); break;
 			case VAR_TYPE_HASHMAP: assignValue(v.getAutoCastedValue<h_varray>(), v.type); break;
+			case VAR_TYPE_FUNCT: assignValue(v.getAutoCastedValue<var_funct>(), v.type); break;
 			case VAR_TYPE_NULL: break;
 			case VAR_TYPE_NAN: break;
 			case VAR_TYPE_INFINITY: break;
@@ -512,19 +641,22 @@ namespace var_typeconversion {
 	inline string var::toReadableString() const {
 		switch(type) {
 			case VAR_TYPE_REFERENCE: return dereferenceConst().toString();
-			case VAR_TYPE_CHAR: return var_typeconversion::genericTypeToString( getAutoCastedValue<char>() );
+			case VAR_TYPE_CHAR: return "'" + var_typeconversion::genericTypeToString( getAutoCastedValue<char>() ) + "'";
 			case VAR_TYPE_INT: return var_typeconversion::genericTypeToString( getAutoCastedValue<int>() );
-			case VAR_TYPE_DOUBLE: return var_typeconversion::genericTypeToString( getAutoCastedValue<double>() );
-			case VAR_TYPE_FLOAT: return var_typeconversion::genericTypeToString( getAutoCastedValue<float>() );
-			case VAR_TYPE_STRING: return getAutoCastedValue<string>();
-			case VAR_TYPE_BOOL: return var_typeconversion::genericTypeToString( getAutoCastedValue<bool>() );
+			case VAR_TYPE_DOUBLE: return var_typeconversion::genericTypeToString( getAutoCastedValue<double>() ) + "d";
+			case VAR_TYPE_FLOAT: return var_typeconversion::genericTypeToString( getAutoCastedValue<float>() ) + "f";
+			case VAR_TYPE_STRING: return "\"" + getAutoCastedValue<string>() + "\"";
+			case VAR_TYPE_BOOL: return var_typeconversion::genericTypeToString( getAutoCastedValue<bool>() ) + "b";
 			case VAR_TYPE_LONG_LONG: return var_typeconversion::genericTypeToString( getAutoCastedValue<long long>() );
 			case VAR_TYPE_ARRAY: return VarrayToReadableString( getAutoCastedValue<varray>() );
 			case VAR_TYPE_HASHMAP: return HVarrayToReadableString( getAutoCastedValue<h_varray>() );
+			case VAR_TYPE_FUNCT: return "<function>";
 			case VAR_TYPE_NULL: return "null";
 			case VAR_TYPE_NAN: return "NaN";
 			case VAR_TYPE_INFINITY: return "infinity";
-			default: throw var_exception_no_such_operation("toReadableString()", getTypeName().c_str());
+			case VAR_TYPE_UNKNOWN: return "<unknown>";
+			default: return "<unknown "+getTypeName()+">";
+			//default: throw var_exception_no_such_operation("toReadableString()", getTypeName().c_str());
 		}
 		return "";
 	}
@@ -541,6 +673,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_LONG_LONG: return var_typeconversion::genericTypeToString( getAutoCastedValue<long long>() );
 			case VAR_TYPE_ARRAY: return VarrayToString( getAutoCastedValue<varray>() );
 			case VAR_TYPE_HASHMAP: return HVarrayToString( getAutoCastedValue<h_varray>() );
+			case VAR_TYPE_FUNCT: return "<function>";
 			case VAR_TYPE_NULL: return "null";
 			case VAR_TYPE_NAN: return "NaN";
 			case VAR_TYPE_INFINITY: return "infinity";
@@ -640,6 +773,10 @@ namespace var_typeconversion {
 
 	inline var::varray var::toArray() const {
 		switch(type) {
+			case VAR_TYPE_UNKNOWN: return vector<var>();
+			case VAR_TYPE_NAN: return var::makeArrayFrom( var::NaN );
+			case VAR_TYPE_NULL: return vector<var>();
+			case VAR_TYPE_INFINITY: return var::makeArrayFrom( var::Infinity );
 			case VAR_TYPE_REFERENCE: return dereferenceConst().toArray();
 			case VAR_TYPE_CHAR: return var::makeArrayFrom( getAutoCastedValue<char>() );
 			case VAR_TYPE_INT: return var::makeArrayFrom( getAutoCastedValue<int>() );
@@ -650,6 +787,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_LONG_LONG: return var::makeArrayFrom( getAutoCastedValue<long long>() );
 			case VAR_TYPE_ARRAY: return getAutoCastedValue<varray>();
 			case VAR_TYPE_HASHMAP: return var::makeArrayFromHashmap( getAutoCastedValue<h_varray>() );
+			case VAR_TYPE_FUNCT: return apply().toArray();
 			default: throw var_exception_no_such_operation("toArray()", getTypeName().c_str());
 		}
 		varray t;
@@ -668,11 +806,52 @@ namespace var_typeconversion {
 			case VAR_TYPE_LONG_LONG: return var::makeHashmapFrom( getAutoCastedValue<long long>() );
 			case VAR_TYPE_ARRAY: return var::makeHashmapFromArray( getAutoCastedValue<varray>() );
 			case VAR_TYPE_HASHMAP: return getAutoCastedValue<h_varray>();
-			default: throw var_exception_no_such_operation("toArray()", getTypeName().c_str());
+			case VAR_TYPE_FUNCT: return apply().toHashmap();
+			default: throw var_exception_no_such_operation("toHashmap()", getTypeName().c_str());
 		}
 		h_varray t;
 		return t;
 	}
+
+	inline var::var_funct var::toFunction() const {
+		switch(type) {
+			case VAR_TYPE_REFERENCE: return dereferenceConst().toFunction();
+			case VAR_TYPE_CHAR:
+			case VAR_TYPE_INT:
+			case VAR_TYPE_DOUBLE:
+			case VAR_TYPE_FLOAT:
+			case VAR_TYPE_STRING:
+			case VAR_TYPE_BOOL:
+			case VAR_TYPE_LONG_LONG:
+			case VAR_TYPE_ARRAY:
+			case VAR_TYPE_HASHMAP: {
+				const var value = (*this);
+				return var_funct_decl({ return value; });
+			}
+			case VAR_TYPE_FUNCT: return getAutoCastedValue<var_funct>();
+			default: throw var_exception_no_such_operation("toFunction()", getTypeName().c_str());
+		}
+		return var_funct_decl({ return var::Null; });
+	}
+
+	/*inline var::var_funct var::toFunction() const {
+		switch(type) {
+			case VAR_TYPE_REFERENCE: return dereferenceConst().toFunction();
+			case VAR_TYPE_CHAR:
+			case VAR_TYPE_INT:
+			case VAR_TYPE_DOUBLE:
+			case VAR_TYPE_FLOAT:
+			case VAR_TYPE_STRING:
+			case VAR_TYPE_BOOL:
+			case VAR_TYPE_LONG_LONG:
+			case VAR_TYPE_ARRAY:
+			case VAR_TYPE_HASHMAP:
+				return var::newConstFunction(*this);
+			case VAR_TYPE_FUNCT: return var(*this);
+			default: throw var_exception_no_such_operation("toFunction()", getTypeName().c_str());
+		}
+		return var::newFunction();
+	}*/
 
 	inline var::operator int*() {
 		castToType(VAR_TYPE_INT);
@@ -719,6 +898,11 @@ namespace var_typeconversion {
 		return static_cast<h_varray*>(this->data);
 	}
 
+	inline var::operator var_funct*() {
+		castToType(VAR_TYPE_FUNCT);
+		return static_cast<var_funct*>(this->data);
+	}
+
 	inline var::operator int() {
 		return toInt();
 	}
@@ -745,6 +929,10 @@ namespace var_typeconversion {
 
 	inline var::operator char() {
 		return toChar();
+ }
+
+ inline var::operator var::var_funct() {
+	 return toFunction();
  }
 
 	template <typename T>
@@ -782,6 +970,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_LONG_LONG: return sizeof( getAutoCastedValue<long long>() );
 			case VAR_TYPE_ARRAY: return sizeof(getAutoCastedValue<varray>()) + sizeof(varray) * getAutoCastedValue<varray>().capacity();
 			case VAR_TYPE_HASHMAP: return sizeof(getAutoCastedValue<h_varray>()) + sizeof(h_varray) * getAutoCastedValue<h_varray>().size();
+			case VAR_TYPE_FUNCT: return sizeof(getAutoCastedValue<var_funct>());
 			default: throw var_exception_no_such_operation("allocation_size()", getTypeName().c_str());
 		}
 	}
@@ -920,6 +1109,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_FLOAT:
 			case VAR_TYPE_STRING:
 			case VAR_TYPE_BOOL:
+			case VAR_TYPE_FUNCT:
 			case VAR_TYPE_LONG_LONG:
 				return copy();
 			case VAR_TYPE_ARRAY: {
@@ -1082,6 +1272,17 @@ namespace var_typeconversion {
 		return size()==v.size() && isSubsetOf(v);
 	}
 
+	inline var var::apply(var args) const {
+		if(type==VAR_TYPE_FUNCT) {
+			return (*(static_cast<var_funct*>(data)))(args);
+		}
+		return *this;
+	}
+
+	inline var var::apply() const {
+		apply({});
+	}
+
 	inline void var::foreachMutate(function<var(var)> callback) {
     switch(type) {
 			case VAR_TYPE_REFERENCE: dereference().foreachMutate(callback); break;
@@ -1093,6 +1294,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_DOUBLE:
 			case VAR_TYPE_FLOAT:
       case VAR_TYPE_BOOL:
+			case VAR_TYPE_FUNCT:
 			case VAR_TYPE_LONG_LONG:
         setTo(callback(*this));
       break;
@@ -1133,6 +1335,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_DOUBLE:
 			case VAR_TYPE_FLOAT:
 			case VAR_TYPE_BOOL:
+			case VAR_TYPE_FUNCT:
 			case VAR_TYPE_LONG_LONG:
 				setTo(callback(var(0), *this));
 			break;
@@ -1240,6 +1443,18 @@ namespace var_typeconversion {
 		eachMutate(x, x.asHashmap());
 	}
 
+	inline void var::eachConvertToFunction() {
+		eachMutate(x, x.asFunction());
+	}
+
+	inline void var::eachApply(var args) {
+		eachMutate(x, x.apply(args));
+	}
+
+	inline void var::eachApply() {
+		eachMutate(x, x.apply());
+	}
+
 	inline var::varray var::doForeach(function<var(var)> callback, varray obj) {
 		for(var& el : obj) {
 			el = callback(el);
@@ -1331,6 +1546,10 @@ namespace var_typeconversion {
 		return type == VAR_TYPE_INFINITY;
 	}
 
+	inline bool var::isTypeFunction() const {
+		return type == VAR_TYPE_FUNCT;
+	}
+
 	inline bool var::isTypeReference() const {
 		return type == VAR_TYPE_REFERENCE;
 	}
@@ -1396,6 +1615,11 @@ namespace var_typeconversion {
 		return *this;
 	}
 
+	inline var& var::castToFunction() {
+		castToType(VAR_TYPE_FUNCT);
+		return *this;
+	}
+
 	inline var var::asInt() {
 		var ret(*this);
 		ret.castToInt();
@@ -1450,6 +1674,12 @@ namespace var_typeconversion {
 		return ret;
 	}
 
+	inline var var::asFunction() {
+		var ret(*this);
+		ret.castToFunction();
+		return ret;
+	}
+
 	inline var var::asType(var::vartypeid t) {
 		var ret(*this);
 		ret.castToType(t);
@@ -1480,6 +1710,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_LONG_LONG: assignValue(toLongLong(), castType); break;
 			case VAR_TYPE_ARRAY: assignValue(toArray(), castType); break;
 			case VAR_TYPE_HASHMAP: assignValue(toHashmap(), castType); break;
+			case VAR_TYPE_FUNCT: var::newConstFunction(*this); break;
 			case VAR_TYPE_NULL: break;
 			case VAR_TYPE_NAN: break;
 			case VAR_TYPE_INFINITY: break;
@@ -1564,6 +1795,10 @@ namespace var_typeconversion {
 
 	inline void var::operator=(char val) {
 		assignValue(val, VAR_TYPE_CHAR);
+	}
+
+	inline void var::operator=(var_funct val) {
+		assignValue(val, VAR_TYPE_FUNCT);
 	}
 
 	template <typename T, int N>
@@ -1666,6 +1901,7 @@ namespace var_typeconversion {
 			case VAR_TYPE_STRING: return comp1.toString()==comp2.toString(); break;
 			case VAR_TYPE_BOOL: return comp1.toBool()==comp2.toBool(); break;
 			case VAR_TYPE_LONG_LONG: return comp1.toLongLong()==comp2.toLongLong();break;
+			case VAR_TYPE_FUNCT: return /*comp1.toFunction()==comp2.toFunction();*/ false; break;
 			case VAR_TYPE_ARRAY: {
 				varray a = toArray();
 				varray b = t.toArray();
@@ -1813,6 +2049,8 @@ namespace var_typeconversion {
 			return (*(static_cast<h_varray*>(data)))[key];
 		} else if(type == VAR_TYPE_ARRAY) {
 			return (*(static_cast<varray*>(data)))[(int)key];
+		//} else if(type == VAR_TYPE_FUNCT) {
+		//	return apply(key);
 		} else {
 			return *this;
 		}
@@ -1947,13 +2185,15 @@ namespace var_typeconversion {
 	}
 
 	inline var::varray::iterator var::begin() {
-		//castToArray();
-		return toArray().begin();
+		castToArray();
+		//return toArray().begin();
+		return ((varray*)data)->begin();
 	}
 
 	inline var::varray::iterator var::end() {
-		//castToArray();
-		return toArray().end();
+		castToArray();
+		//return toArray().end();
+		return ((varray*)data)->end();
 	}
 
 
