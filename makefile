@@ -1,5 +1,57 @@
 ECHO := @
 
+TGTCC_GC_CEFLAGS=  hehe
+TGTCC_GCPP_CEFLAGS=-pthread -lm -std=c++11 -O3 -w
+TGTCC_CLANG_CEFLAGS=  hehe
+TGTCC_AVCC=
+TGTCC_AVCC_SIZE=0
+
+
+CC_GC_VERSION=$(shell gcc -dumpversion 2> /dev/null || echo "")
+CC_GCPP_VERSION=$(shell g++ -dumpversion 2> /dev/null || echo "")
+CC_CLANG_VERSION=$(shell g++ -dumpversion 2> /dev/null || echo "")
+
+define colorecho
+@tput setaf 6
+@echo $1
+@tput sgr0
+endef
+
+ifneq (,$(filter conf init,$(MAKECMDGOALS)))
+
+ifneq (,$(CC_GC_VERSION))
+ifneq (,$(TGTCC_GC_CEFLAGS))
+$(info [Compiler autoconf] gcc version detected $(CC_GC_VERSION)   [SUPPORTED])
+TGTCC_AVCC:=$(TGTCC_AVCC)$$(($(TGTCC_AVCC_SIZE)+1)).) gcc ($(CC_GC_VERSION))\\n
+TGTCC_AVCC_SIZE:=$$(($(TGTCC_AVCC_SIZE)+1))
+else
+$(info [Compiler autoconf] clang version detected $(CC_GC_VERSION)   [no support])
+endif
+endif
+
+ifneq (,$(CC_GCPP_VERSION))
+ifneq (,$(TGTCC_GCPP_CEFLAGS))
+$(info [Compiler autoconf] g++ version detected $(CC_GCPP_VERSION)   [SUPPORTED])
+TGTCC_AVCC:=$(TGTCC_AVCC)$$(($(TGTCC_AVCC_SIZE)+1)).) g++ ($(CC_GCPP_VERSION)) \\n
+TGTCC_AVCC_SIZE:=$$(($(TGTCC_AVCC_SIZE)+1))
+else
+$(info [Compiler autoconf] clang version detected $(CC_GCPP_VERSION)   [no support])
+endif
+endif
+
+ifneq (,$(CC_CLANG_VERSION))
+ifneq (,$(TGTCC_CLANG_CEFLAGS))
+$(info [Compiler autoconf] clang version detected $(CC_CLANG_VERSION)   [SUPPORTED])
+TGTCC_AVCC:=$(TGTCC_AVCC)$$(($(TGTCC_AVCC_SIZE)+1)).) clang ($(CC_CLANG_VERSION))\\n
+TGTCC_AVCC_SIZE:=$$(($(TGTCC_AVCC_SIZE)+1))
+else
+$(info [Compiler autoconf] clang version detected $(CC_CLANG_VERSION)   [no support])
+endif
+endif
+
+endif
+
+
 CC := $(ECHO)g++
 CFLINKS :=
 CEFLAGS_DEBUG := -pthread -lm -std=c++11 -O2 -Wall -W -Wextra -Wdouble-promotion -pedantic -Wmissing-include-dirs -Wunused -Wuninitialized -Wextra -Wstrict-overflow=3 -Wtrampolines -Wfloat-equal -Wconversion -Wmissing-field-initializers -Wno-multichar -Wpacked -Winline -Wshadow
@@ -77,3 +129,7 @@ clean-examples-build:
 ./examples/bin/%.o: ./examples/src/%.cpp
 	$(info Compiling example: $<)
 	$(CC) $(CC_FLAGS) -c -o $@ $<
+
+init:
+	@printf "[Compiler autoconf] Which compiler do you prefer to use?\n$(TGTCC_AVCC)> "
+	@read DELICIOUS_PATH
