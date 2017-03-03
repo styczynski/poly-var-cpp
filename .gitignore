@@ -3,6 +3,7 @@
 *.lo
 *.o
 *.obj
+_autoconf_.config
 
 # Precompiled Headers
 *.gch
