@@ -1,6 +1,30 @@
 # poly-var-cpp
 Just-for-fun implementation of polymorphic variables in C/C++
 
+```c++
+#include <var>
+#include <var_math>
+#include <var_test>
+using namespace variable;
+
+int main(void) {
+
+  /* Constructing a polymorphic-type tree */
+	var hmap = var::Hashmap;
+	hmap["foo"] = "bar";
+  
+	var a = hmap.ref();
+	var ref = {a.ref(), 42};
+	var ref2 = {ref.ref(), 69, 25};
+	var tree = { {{}, 12, {}}, "ala", {{}, 69, {}} };
+
+  vardbg(tree);
+
+	return 0;
+}
+
+```
+
 ## Usage
 
 Clone the repository, go to the directory where it's placed
