@@ -176,7 +176,12 @@ CC_SEL_GEN_EXE:=$(subst $$$$,$$,$(CC_SEL_GEN_EXE))
 else
 
 include _autoconf_.config
+
+ifeq (,$(findstring run,$(MAKECMDGOALS)))
+ifeq (help,$(findstring run-example-,$(MAKECMDGOALS)))
 $(info Using compiler from autoconfig file ($(CC_SEL)))
+endif
+endif
 
 #$(error FY)
 

@@ -145,6 +145,7 @@
 #include <iterator>
 #include <cstring>
 #include <cstdlib>
+#include <cstddef>
 using namespace std;
 
 #ifndef _VAR_H
@@ -252,6 +253,217 @@ class var {
 
 	public:
 
+
+		class iterator {
+			public:
+				var* ptr;
+				int index;
+				int max_index;
+
+		  public:
+		    typedef std::ptrdiff_t difference_type;
+		    typedef var value_type;
+		    typedef var& reference;
+		    typedef var* pointer;
+		    typedef std::random_access_iterator_tag iterator_category;
+
+		    /*iterator() {
+					ptr = (var*)-1;
+					index = -1;
+					max_index = -1;
+				}*/
+
+				iterator(var* v, int i, int m) {
+					ptr = v;
+					index = i;
+					max_index = m;
+				}
+
+		    iterator(const iterator& it) {
+					ptr = it.ptr;
+					index = it.index;
+					max_index = it.max_index;
+				}
+
+		    ~iterator() {
+
+				}
+
+		    iterator& operator=(const iterator& it) {
+					ptr = it.ptr;
+					index = it.index;
+					max_index = it.max_index;
+					return (*this);
+				}
+
+		    bool operator==(const iterator& it) const {
+					return (ptr == it.ptr && index == it.index);
+				}
+
+		    bool operator!=(const iterator& it) const {
+					return !(ptr == it.ptr && index == it.index);
+				}
+
+				bool operator<(const iterator& it) {
+					return (index < it.index);
+				}
+
+        bool operator>(const iterator& it) {
+					return (index > it.index);
+				}
+
+        bool operator<=(const iterator& it) {
+					return (index <= it.index);
+				}
+
+        bool operator>=(const iterator& it) {
+					return (index >= it.index);
+				}
+
+				iterator& operator++() {
+					++index;
+					return (*this);
+				}
+
+        iterator operator++(int i) {
+					++index;
+					return (*this);
+				}
+
+        iterator& operator--() {
+					if(index>0) --index;
+					return (*this);
+				}
+
+        iterator operator--(int i) {
+					if(index>0) --index;
+					return (*this);
+				}
+
+        iterator& operator+=(int i) {
+					index += i;
+					if(index > max_index) index=max_index;
+					return (*this);
+				}
+
+        iterator operator+(int i) const {
+					iterator it((var*)0,0,0);
+					it.ptr = ptr;
+					it.index = index + i;
+					it.max_index = max_index;
+					if(it.index > it.max_index) it.index = max_index;
+					return it;
+				}
+
+        iterator& operator-=(int i) {
+					if(index>0) index -= i;
+					return (*this);
+				}
+
+        iterator operator-(int i) const {
+					iterator it((var*)0,0,0);
+					it.ptr = ptr;
+					it.index = index - i;
+					it.max_index = max_index;
+					if(it.index < 0) it.index = 0;
+					return it;
+				}
+
+        difference_type operator-(iterator it) const {
+					return index - it.index + 1;
+				}
+
+		    reference operator*() const {
+					int qq = index;
+					if(index==max_index) --qq;
+					return (*ptr)[qq];
+				}
+
+		    pointer operator->() const {
+					return &((*ptr)[0]);
+				}
+    };
+
+		/*class const_iterator {
+			public:
+				const var* ptr;
+				int index;
+		  public:
+	      typedef std::ptrdiff_t difference_type;
+	      typedef var value_type;
+	      typedef const var& const_reference;
+	      typedef const var* const_pointer;
+	      typedef std::random_access_iterator_tag iterator_category;
+
+	      const_iterator() {
+
+				}
+
+				const_iterator(const var* v, int i) {
+					ptr = v;
+					index = i;
+				}
+
+	      const_iterator(const const_iterator& it) {
+					ptr = it.ptr;
+					index = it.index;
+				}
+
+	      const_iterator(const iterator& it) {
+					ptr = it.ptr;
+					index = it.index;
+				}
+
+	      ~const_iterator() {
+
+				}
+
+	      const_iterator& operator=(const const_iterator& it) {
+					ptr = it.ptr;
+					index = it.index;
+				}
+
+	      bool operator==(const const_iterator& it) const {
+					return (ptr == it.ptr && index == it.index);
+				}
+
+	      bool operator!=(const const_iterator& it) const {
+					return !(ptr == it.ptr && index == it.index);
+				}
+
+	      const_iterator& operator++() {
+					++index;
+				}
+
+	      const_reference operator*() const {
+					return (*ptr)[index];
+				}
+
+	      const_pointer operator->() const {
+					return &((*ptr)[index]);
+				}
+    };*/
+
+
+		inline iterator begin() {
+			iterator i(this, 0, size());
+			return i;
+		}
+
+		inline iterator end() {
+			iterator i(this, size(), size());
+			return i;
+		}
+
+		/*inline const_iterator begin() const {
+			const_iterator i(this, 0);
+			return i;
+		}
+
+		inline const_iterator end() const {
+			const_iterator i(this, size());
+			return i;
+		}*/
 
 		inline static var newInt();
 		inline static var newDouble();
@@ -531,8 +743,33 @@ class var {
 		inline bool hasCommonElementsWith(var v);
 		inline bool has(var v);
 		inline bool isSameSet(var v);
+		inline void reverse();
+		inline void pop();
+		inline void push(var v);
+		inline void pop_front();
+		inline void push_front(var v);
+		inline void sort();
+		inline void sort(var f);
+		inline long long hash();
+		inline void unique();
+
 		inline var apply(var args) const;
 		inline var apply() const;
+		inline var appliedTo(var f) const;
+
+		inline var call(var v1, var v2, var v3, var v4, var v5) const;
+		inline var call(var v1, var v2, var v3, var v4) const;
+		inline var call(var v1, var v2, var v3) const;
+		inline var call(var v1, var v2) const;
+		inline var call(var v1) const;
+		inline var call() const;
+
+		inline var operator()(var v1, var v2, var v3, var v4, var v5) const;
+		inline var operator()(var v1, var v2, var v3, var v4) const;
+		inline var operator()(var v1, var v2, var v3) const;
+		inline var operator()(var v1, var v2) const;
+		inline var operator()(var v1) const;
+		inline var operator()() const;
 
 		inline bool equals(var v) const;
 		inline bool dEquals(var v) const;
@@ -567,6 +804,9 @@ class var {
 		inline void eachConvertToFunction();
 		inline void eachApply(var args);
 		inline void eachApply();
+
+		inline void iterate(var f);
+		inline var fold(var f, var acc);
 
 		inline static varray doForeach(function<var(var)> callback, varray obj);
 		inline static h_varray doForeach(function<var(var, var)> callback, h_varray obj);
@@ -630,11 +870,11 @@ class var {
 		//inline var& operator[](const char* key);
 		inline var& operator[](var key);
 		template <typename T> inline var& operator[](T key);
-		template <typename T> inline var operator<(T v);
-		template <typename T> inline var operator>(T v);
-		template <typename T> inline var operator<=(T v);
-		template <typename T> inline var operator>=(T v);
-		template <typename T> inline var operator==(T v);
+		template <typename T> inline var operator<(T v) const;
+		template <typename T> inline var operator>(T v) const;
+		template <typename T> inline var operator<=(T v) const;
+		template <typename T> inline var operator>=(T v) const;
+		template <typename T> inline var operator==(T v) const;
 
 		inline var abs();
 		inline var neg();
@@ -643,8 +883,8 @@ class var {
 
 		inline void clear();
 
-		inline varray::iterator begin();
-		inline varray::iterator end();
+		//inline varray::iterator begin();
+		//inline varray::iterator end();
 };
 
 #include "var_operator_toolkit.h"

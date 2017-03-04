@@ -595,6 +595,9 @@
 		if(a.getType() == VAR_TYPE_NAN || b.getType() == VAR_TYPE_NAN) return false;
 		if(a.getType() == VAR_TYPE_NULL || b.getType() == VAR_TYPE_NULL) return false;
 
+		if(a.type > b.type) return false;
+		if(a.type < b.type) return true;
+
 
 		greaterPrecision {
 			return operator_comparsion_less(b.type, a, b, false);
@@ -627,6 +630,8 @@
 		if(a.getType() == VAR_TYPE_NAN || b.getType() == VAR_TYPE_NAN) return false;
 		if(a.getType() == VAR_TYPE_NULL || b.getType() == VAR_TYPE_NULL) return false;
 
+		if(a.type < b.type) return false;
+		if(a.type > b.type) return true;
 
 		greaterPrecision {
 			return operator_comparsion_more(b.type, a, b, false);

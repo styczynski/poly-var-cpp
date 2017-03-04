@@ -778,13 +778,13 @@ namespace var_typeconversion {
 			case VAR_TYPE_NULL: return vector<var>();
 			case VAR_TYPE_INFINITY: return var::makeArrayFrom( var::Infinity );
 			case VAR_TYPE_REFERENCE: return dereferenceConst().toArray();
-			case VAR_TYPE_CHAR: return var::makeArrayFrom( getAutoCastedValue<char>() );
-			case VAR_TYPE_INT: return var::makeArrayFrom( getAutoCastedValue<int>() );
-			case VAR_TYPE_DOUBLE: return var::makeArrayFrom( getAutoCastedValue<double>() );
-			case VAR_TYPE_FLOAT: return var::makeArrayFrom( getAutoCastedValue<float>() );
+			case VAR_TYPE_CHAR: return var::makeArrayFromString( var_typeconversion::genericTypeToString( getAutoCastedValue<char>() ) );
+			case VAR_TYPE_INT: return var::makeArrayFromString( var_typeconversion::genericTypeToString( getAutoCastedValue<int>() ) );
+			case VAR_TYPE_DOUBLE: return var::makeArrayFromString( var_typeconversion::genericTypeToString( getAutoCastedValue<double>() ) );
+			case VAR_TYPE_FLOAT: return var::makeArrayFromString( var_typeconversion::genericTypeToString( getAutoCastedValue<float>() ) );
+			case VAR_TYPE_BOOL: return var::makeArrayFromString( var_typeconversion::genericTypeToString( getAutoCastedValue<bool>() ) );
+			case VAR_TYPE_LONG_LONG: return var::makeArrayFromString( var_typeconversion::genericTypeToString( getAutoCastedValue<long long>() ) );
 			case VAR_TYPE_STRING: return var::makeArrayFromString( getAutoCastedValue<string>() );
-			case VAR_TYPE_BOOL: return var::makeArrayFrom( getAutoCastedValue<bool>() );
-			case VAR_TYPE_LONG_LONG: return var::makeArrayFrom( getAutoCastedValue<long long>() );
 			case VAR_TYPE_ARRAY: return getAutoCastedValue<varray>();
 			case VAR_TYPE_HASHMAP: return var::makeArrayFromHashmap( getAutoCastedValue<h_varray>() );
 			case VAR_TYPE_FUNCT: return apply().toArray();
@@ -1272,6 +1272,84 @@ namespace var_typeconversion {
 		return size()==v.size() && isSubsetOf(v);
 	}
 
+	inline void var::reverse() {
+		vartypeid t = type;
+		std::reverse(begin(), end());
+		castToType(t);
+	}
+
+	inline void var::pop() {
+		vartypeid t = type;
+		varray a = toArray();
+		if(a.size()>0) {
+			a.pop_back();
+		}
+		operator=(a);
+		castToType(t);
+	}
+
+	inline void var::push(var v) {
+		vartypeid t = type;
+		varray a = toArray();
+		a.push_back(v);
+		operator=(a);
+		castToType(t);
+	}
+
+	inline void var::pop_front() {
+		vartypeid t = type;
+		varray a = toArray();
+		if(a.size()>0) {
+			a.erase(a.begin());
+		}
+		operator=(a);
+		castToType(t);
+	}
+
+	inline void var::push_front(var v) {
+		vartypeid t = type;
+		varray a = toArray();
+		a.insert(a.begin(), v);
+		operator=(a);
+		castToType(t);
+	}
+
+	inline void var::sort() {
+		vartypeid t = type;
+		std::sort(begin(), end());
+		castToType(t);
+	}
+
+	inline void var::sort(var f) {
+		vartypeid t = type;
+		std::sort(begin(), end(), [f](const var &a, const var &b) -> bool {
+			 return f(a, b).toBool();
+		});
+		castToType(t);
+	}
+
+	inline long long var::hash() {
+		switch(type) {
+			case VAR_TYPE_FUNCT:
+			case VAR_TYPE_UNKNOWN: {
+				return getType()*1000+3219;
+			}
+			default: {
+				std::hash<std::string> str_hash;
+				return (long long)str_hash(toReadableString());
+			}
+		}
+		return 0;
+	}
+
+	inline void var::unique() {
+		vartypeid t = type;
+		varray a = toArray();
+		std::unique(a.begin(), a.end());
+		operator=(a);
+		castToType(t);
+	}
+
 	inline var var::apply(var args) const {
 		if(type==VAR_TYPE_FUNCT) {
 			return (*(static_cast<var_funct*>(data)))(args);
@@ -1280,7 +1358,59 @@ namespace var_typeconversion {
 	}
 
 	inline var var::apply() const {
-		apply({});
+		apply(var::newArray());
+	}
+
+	inline var var::appliedTo(var f) const {
+		return f.apply(*this);
+	}
+
+	inline var var::call(var v1, var v2, var v3, var v4, var v5) const {
+		return apply({v1, v2, v3, v4, v5});
+	}
+
+	inline var var::call(var v1, var v2, var v3, var v4) const {
+		return apply({v1, v2, v3, v4});
+	}
+
+	inline var var::call(var v1, var v2, var v3) const {
+		return apply({v1, v2, v3});
+	}
+
+	inline var var::call(var v1, var v2) const {
+		return apply({v1, v2});
+	}
+
+	inline var var::call(var v1) const {
+		return apply({v1});
+	}
+
+	inline var var::call() const {
+		return apply();
+	}
+
+	inline var var::operator()(var v1, var v2, var v3, var v4, var v5) const {
+		return apply({v1, v2, v3, v4, v5});
+	}
+
+	inline var var::operator()(var v1, var v2, var v3, var v4) const {
+		return apply({v1, v2, v3, v4});
+	}
+
+	inline var var::operator()(var v1, var v2, var v3) const {
+		return apply({v1, v2, v3});
+	}
+
+	inline var var::operator()(var v1, var v2) const {
+		return apply({v1, v2});
+	}
+
+	inline var var::operator()(var v1) const {
+		return apply({v1});
+	}
+
+	inline var var::operator()() const {
+		return apply();
 	}
 
 	inline void var::foreachMutate(function<var(var)> callback) {
@@ -1453,6 +1583,17 @@ namespace var_typeconversion {
 
 	inline void var::eachApply() {
 		eachMutate(x, x.apply());
+	}
+
+	inline void var::iterate(var f) {
+		eachMutate(x, f.call(x, key));
+	}
+
+	inline var var::fold(var f, var acc) {
+		foreach([&acc, f](var element)->void {
+			acc = f(acc, element);
+		});
+		return acc;
 	}
 
 	inline var::varray var::doForeach(function<var(var)> callback, varray obj) {
@@ -2049,10 +2190,9 @@ namespace var_typeconversion {
 			return (*(static_cast<h_varray*>(data)))[key];
 		} else if(type == VAR_TYPE_ARRAY) {
 			return (*(static_cast<varray*>(data)))[(int)key];
-		//} else if(type == VAR_TYPE_FUNCT) {
-		//	return apply(key);
-		} else {
-			return *this;
+		} else if(type == VAR_TYPE_STRING) {
+			castToArray();
+			return (*(static_cast<varray*>(data)))[(int)key];
 		}
 	}
 
@@ -2144,29 +2284,29 @@ namespace var_typeconversion {
 	}
 
 	template <typename T>
-	inline var var::operator<(T v) {
+	inline var var::operator<(T v) const {
 		return var::operator_comparsion_less( type, *this, v );
 	}
 
 	template <typename T>
-	inline var var::operator>(T v) {
+	inline var var::operator>(T v) const {
 		return var::operator_comparsion_more( type, *this, v );
 	}
 
 	template <typename T>
-	inline var var::operator<=(T v) {
+	inline var var::operator<=(T v) const {
 		if(var::operator_comparsion_equal( type, *this, v )) return true;
 		return var::operator_comparsion_less( type, *this, v );
 	}
 
 	template <typename T>
-	inline var var::operator>=(T v) {
+	inline var var::operator>=(T v) const {
 		if(var::operator_comparsion_equal( type, *this, v )) return true;
 		return var::operator_comparsion_more( type, *this, v );
 	}
 
 	template <typename T>
-	inline var var::operator==(T v) {
+	inline var var::operator==(T v) const {
 		return var::operator_comparsion_equal( type, *this, v );
 	}
 
@@ -2184,7 +2324,7 @@ namespace var_typeconversion {
 		type = VAR_TYPE_NULL;
 	}
 
-	inline var::varray::iterator var::begin() {
+	/*inline var::varray::iterator var::begin() {
 		castToArray();
 		//return toArray().begin();
 		return ((varray*)data)->begin();
@@ -2194,7 +2334,7 @@ namespace var_typeconversion {
 		castToArray();
 		//return toArray().end();
 		return ((varray*)data)->end();
-	}
+	}*/
 
 
 #include "var_operator_toolkit.cpp"
