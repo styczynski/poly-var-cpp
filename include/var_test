@@ -1,0 +1,13 @@
+
+#define USE_DEFAULT_STRING_BEHAVIOUR
+#define NAMESPACE_VAR_BEGIN__ namespace variable {
+#define NAMESPACE_VAR_END__ };
+
+#define vardbg(x) cout<<varstr(x)<<" := "<<(x)<<"\n";
+#define vardbgOp1(a, op) cout<<varstr(a)<<" := "<<(a)<<" |-> "<<varstr(op)<<" := "<<(op)<<"\n";
+#define varstr(x) #x
+
+#include <ctime>
+#include <functional>
+
+#include "var_test.cpp"

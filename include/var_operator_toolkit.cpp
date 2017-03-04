@@ -1,3 +1,4 @@
+NAMESPACE_VAR_BEGIN__
 
 	#undef declareOperatorOverload
 	#define declareOperatorOverload(OPERATOR, TYPENAME) \
@@ -152,3 +153,5 @@
 	var operator"" _var( unsigned long long int value ){
   		return var((long long)value);
 	}
+
+NAMESPACE_VAR_END__

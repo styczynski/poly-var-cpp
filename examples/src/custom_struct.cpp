@@ -1,6 +1,6 @@
-#include <var.h>
-#include <var_math.h>
-#include <var_test.h>
+#include <var>
+#include <var_math>
+#include <var_test>
 
 using namespace variable;
 
