@@ -1,3 +1,8 @@
+#include "var"
+#include "var_math"
+
+#ifndef _VAR_MATH_CPP
+#define _VAR_MATH_CPP
 
 
 NAMESPACE_VAR_BEGIN__
@@ -13,7 +18,7 @@ inline var var_math::sqrt(var x) {
 }
 
 inline var var_math::pow(var x, var y) {
-  return var::Null;
+  return x+y; //TODO: Corect impl
 }
 
 inline var var_math::sin(var x) {
@@ -31,3 +36,5 @@ inline var var_math::neg(var x) {
 }
 
 NAMESPACE_VAR_END__
+
+#endif

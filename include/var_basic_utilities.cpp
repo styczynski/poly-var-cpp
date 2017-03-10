@@ -1,42 +1,47 @@
+#include "var"
+
+#ifndef _VAR_BASIC_UTILITIES_CPP
+#define _VAR_BASIC_UTILITIES_CPP
+
 NAMESPACE_VAR_BEGIN__
 
 class var_exception: public exception {
 	private:
 		const char* message = nullptr;
-		
+
 	protected:
-		
+
 		inline void setMessage(const char* argMessage) {
 			message = argMessage;
 		}
-		
+
 	public:
-		
+
 		var_exception() {
-			
+
 		}
-		
+
 		var_exception(const char* argMessage) {
 			message = argMessage;
 		}
-	
+
 		inline virtual const char* what() const throw() {
 			return message;
 		}
-		
+
 		inline const char* getMessage() {
 			return message;
 		}
-	
+
 };
 
 class var_exception_no_such_operation: public var_exception {
 	private:
 		char* opname;
 		char* optypename;
-	
+
 	public:
-	
+
 		var_exception_no_such_operation(const char* operation_name, const char* operation_typename) : var_exception() {
 			char* opname = nullptr;
 			char* optypename = nullptr;
@@ -58,3 +63,5 @@ class var_exception_no_such_operation: public var_exception {
 };
 
 NAMESPACE_VAR_END__
+
+#endif

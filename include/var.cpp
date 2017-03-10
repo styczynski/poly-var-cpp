@@ -1,4 +1,7 @@
+#include "var"
 
+#ifndef _VAR_CPP
+#define _VAR_CPP
 
 
 NAMESPACE_VAR_BEGIN__
@@ -360,7 +363,7 @@ namespace var_typeconversion {
 
 	inline var var::newWrapperProcedure( void(*farg)() ) {
 		void(*const f)() = farg;
-		return var((std::function<var(var)>)([f](var args)->var {
+		return var((std::function<var(var)>)([f](__attribute__ ((unused)) var args)->var {
 			f();
 			return var::Null;
 		}));
@@ -932,7 +935,8 @@ namespace var_typeconversion {
 	template <typename T>
 	inline var::operator T() {
 		cout<<"[WARN] Experimental generic CONVERSION WAS USED! [var->T] :(\n";cout.flush();
-		return (T::fromVar(*this));
+		//return (T::fromVar(*this));
+		return (var::conversion<T>::fromVar(*this));
 	}
 
 
@@ -940,11 +944,11 @@ namespace var_typeconversion {
 		return type;
 	}
 
-	inline const unsigned int var::size() {
+	inline unsigned int var::size() {
 		return toArray().size();
 	}
 
-	inline const unsigned int var::allocationSize() {
+	inline unsigned int var::allocationSize() {
 		switch(type) {
 			case VAR_TYPE_NULL: return 0;
 			case VAR_TYPE_INFINITY: return 0;
@@ -964,11 +968,11 @@ namespace var_typeconversion {
 		}
 	}
 
-	inline const unsigned int var::dataSize() {
+	inline unsigned int var::dataSize() {
 		return sizeof(this) + allocationSize();
 	}
 
-	inline const unsigned int var::totalDataSize() {
+	inline unsigned int var::totalDataSize() {
 		if(type == VAR_TYPE_REFERENCE) {
 			return dataSize() + dereference().totalDataSize();
 		}
@@ -1105,6 +1109,7 @@ namespace var_typeconversion {
 				varray* v = new varray();
 				foreach((function<var(var)>)([&](var value)->var {
 					v->push_back(value.deepCopy());
+					return value;
 				}));
 				var ret;
 				ret.data = v;
@@ -1115,6 +1120,7 @@ namespace var_typeconversion {
 				h_varray* v = new h_varray();
 				foreach((function<var(var, var)>)([&](var key, var value)->var {
 					(*v)[key] = value.deepCopy();
+					return value;
 				}));
 				var ret;
 				ret.data = v;
@@ -1347,7 +1353,7 @@ namespace var_typeconversion {
 	}
 
 	inline var var::apply() const {
-		apply(var::newArray());
+		return apply(var::newArray());
 	}
 
 	inline var var::appliedTo(var f) const {
@@ -1507,7 +1513,7 @@ namespace var_typeconversion {
 	}
 
 	inline void var::eachGetKey() {
-		eachMutate(x, key);
+		eachMutateKey(x, key);
 	}
 
 	inline void var::eachAdd(var t) {
@@ -1575,7 +1581,7 @@ namespace var_typeconversion {
 	}
 
 	inline void var::iterate(var f) {
-		eachMutate(x, f.call(x, key));
+		eachMutateKey(x, f.call(x, key));
 	}
 
 	inline var var::fold(var f, var acc) {
@@ -1980,8 +1986,8 @@ namespace var_typeconversion {
 	template <typename T>
 	inline void var::operator=(T x) {
 		cout<<"[WARN] Experimental generic CONVERSION WAS USED! [T->var] :(\n";cout.flush();
-		setTo(T::toVar(x));
-
+		//setTo(T::toVar(x));
+		setTo(var::conversion<T>::toVar(x));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2182,6 +2188,8 @@ namespace var_typeconversion {
 		} else if(type == VAR_TYPE_STRING) {
 			castToArray();
 			return (*(static_cast<varray*>(data)))[(int)key];
+		} else {
+			return *this;
 		}
 	}
 
@@ -2251,7 +2259,7 @@ namespace var_typeconversion {
 		return (*this);
 	}
 
-	inline var var::operator++(int dummy_parameter) {
+	inline var var::operator++(__attribute__ ((unused)) int dummy_parameter) {
 		operator+=(var(1).asTypeOf(*this));
 		return (*this);
 	}
@@ -2261,7 +2269,7 @@ namespace var_typeconversion {
 		return (*this);
 	}
 
-	inline var var::operator--(int dummy_parameter) {
+	inline var var::operator--(__attribute__ ((unused)) int dummy_parameter) {
 		operator-=(var(1).asTypeOf(*this) );
 		return (*this);
 	}
@@ -2375,7 +2383,7 @@ namespace var_typeconversion {
 		return (*this);
 	}
 
-	var::iterator var::iterator::operator++(int i) {
+	var::iterator var::iterator::operator++(__attribute__ ((unused)) int i) {
 		++index;
 		return (*this);
 	}
@@ -2385,7 +2393,7 @@ namespace var_typeconversion {
 		return (*this);
 	}
 
-	var::iterator var::iterator::operator--(int i) {
+	var::iterator var::iterator::operator--(__attribute__ ((unused)) int i) {
 		if(index>0) --index;
 		return (*this);
 	}
@@ -2507,3 +2515,5 @@ NAMESPACE_VAR_END__
 
 
 */
+
+#endif

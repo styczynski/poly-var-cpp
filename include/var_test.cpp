@@ -1,3 +1,8 @@
+#include "var"
+#include "var_test"
+
+#ifndef _VAR_TEST_CPP
+#define _VAR_TEST_CPP
 
 NAMESPACE_VAR_BEGIN__
 
@@ -10,3 +15,5 @@ void var_profile(function<void(void)> f) {
 }
 
 NAMESPACE_VAR_END__
+
+#endif

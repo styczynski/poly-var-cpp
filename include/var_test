@@ -1,3 +1,5 @@
+#ifndef _VAR_TEST
+#define _VAR_TEST
 
 #define USE_DEFAULT_STRING_BEHAVIOUR
 #define NAMESPACE_VAR_BEGIN__ namespace variable {
@@ -11,3 +13,5 @@
 #include <functional>
 
 #include "var_test.cpp"
+
+#endif

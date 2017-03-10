@@ -1,24 +1,29 @@
+#include "var"
+
+#ifndef _VAR_OPERATOR_TOOLKIT_CPP
+#define _VAR_OPERATOR_TOOLKIT_CPP
+
 NAMESPACE_VAR_BEGIN__
 
 	#undef declareOperatorOverload
 	#define declareOperatorOverload(OPERATOR, TYPENAME) \
 		inline var operator OPERATOR (TYPENAME a, var b) { \
 			return var(a) OPERATOR b; \
-		} \
-		inline var operator OPERATOR (var a, TYPENAME b) { \
-			return a OPERATOR var(b); \
 		}
+		/*inline var operator OPERATOR (var a, TYPENAME b) { \
+			return a OPERATOR var(b); \
+		}*/
 
 	#undef declareOperatorOverloadT
 	#define declareOperatorOverloadT(TEMPLATE, OPERATOR, TYPENAME) \
 		template <typename TEMPLATE> \
 		inline var operator OPERATOR (TYPENAME a, var b) { \
 			return var(a) OPERATOR b; \
-		} \
-		template <typename TEMPLATE> \
+		}
+		/*template <typename TEMPLATE> \
 		inline var operator OPERATOR (var a, TYPENAME b) { \
 			return a OPERATOR var(b); \
-		}
+		}*/
 
 
 
@@ -57,6 +62,7 @@ NAMESPACE_VAR_BEGIN__
 		return var(a)^b;
 	}
 
+  /*
 	template <typename T>
 	inline var operator+(var a, T b) {
 		return a+var(b);
@@ -95,7 +101,7 @@ NAMESPACE_VAR_BEGIN__
 	template <typename T>
 	inline var operator^(var a, T b) {
 		return a^var(b);
-	}
+	}*/
 
 	declareOperatorOverload(<<, short);
 	declareOperatorOverload(<<, int);
@@ -142,9 +148,13 @@ NAMESPACE_VAR_BEGIN__
 	}
 
 
+	/*
+	//TODO: Some errors on g++ gcc version 5.4.0 20160603 (release) (PLD-Linux)
+
 	var operator"" _var( const char* value, unsigned int len ){
   		return var(string(value));
 	}
+	*/
 
 	var operator"" _var( long double value ){
   		return var((double)value);
@@ -155,3 +165,5 @@ NAMESPACE_VAR_BEGIN__
 	}
 
 NAMESPACE_VAR_END__
+
+#endif

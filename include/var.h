@@ -1,3 +1,8 @@
+#include "var"
+
+#ifndef _VAR_H
+#define _VAR_H
+
 /*
 
  C/C++ Var Library (1.0v)
@@ -148,10 +153,9 @@
 #include <cstddef>
 using namespace std;
 
-#ifndef _VAR_H
-#define _VAR_H
 
 NAMESPACE_VAR_BEGIN__
+
 
 class var {
 
@@ -171,6 +175,16 @@ class var {
 
 		// Function holder type
 		typedef std::function<var(var)> var_funct;
+
+		template<typename T> class conversion {
+			public:
+				static var toVar(T c) {
+					return T::toVar(c);
+				}
+				static T fromVar(var v) {
+					return T::fromVar(v);
+				}
+		};
 
 
 	private:
@@ -534,10 +548,10 @@ class var {
 		template <typename T> inline void assignValue(T val, vartypeid newtype = VAR_TYPE_UNKNOWN);
 
 		/** Size determining functions **/
-		inline const unsigned int size();
-		inline const unsigned int allocationSize();
-		inline const unsigned int dataSize();
-		inline const unsigned int totalDataSize();
+		inline unsigned int size();
+		inline unsigned int allocationSize();
+		inline unsigned int dataSize();
+		inline unsigned int totalDataSize();
 
 		/** Operations for hashmaps **/
 		inline void removeKey(string key);
@@ -620,7 +634,8 @@ class var {
 		inline void foreach(function<void(var, var)> callback);
 		inline void foreachMutate(function<var(var)> callback);
 		inline void foreachMutate(function<var(var, var)> callback);
-		#define eachMutate(VARNAME, OPCODE) foreachMutate((function<var(var, var)>)([&](var key, var VARNAME)->var{return (OPCODE);}))
+		#define eachMutate(VARNAME, OPCODE) foreachMutate((function<var(var)>)([&](__attribute__ ((unused)) var VARNAME)->var{return (OPCODE);}))
+		#define eachMutateKey(VARNAME, OPCODE) foreachMutate((function<var(var, var)>)([&](__attribute__ ((unused)) var key, __attribute__ ((unused)) var VARNAME)->var{return (OPCODE);}))
 		inline void eachMin(var v);
 		inline void eachMax(var v);
 		inline void eachSet(var v);

@@ -1,3 +1,7 @@
+#include "var"
+
+#ifndef _VAR_MATH_H
+#define _VAR_MATH_H
 
 NAMESPACE_VAR_BEGIN__
 
@@ -13,3 +17,5 @@ class var_math {
 };
 
 NAMESPACE_VAR_END__
+
+#endif

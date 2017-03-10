@@ -1,11 +1,17 @@
+#ifndef _VAR
+#define _VAR
+
 #define USE_DEFAULT_STRING_BEHAVIOUR
 #define NAMESPACE_VAR_BEGIN__ namespace variable {
 #define NAMESPACE_VAR_END__ };
 
-#define var_funct_decl(CODE) ((std::function<var(var)>)([&](var args)->var CODE))
+#define var_funct_decl(CODE) ((std::function<var(var)>)([&](__attribute__ ((unused)) var args)->var CODE))
 
 #include "var_custom_objects.h"
 #include "var.h"
 #include "var_basic_utilities.cpp"
 #include "var.cpp"
 #include "var_operator_toolkit.cpp"
+#include "var_stl_conversions.cpp"
+
+#endif

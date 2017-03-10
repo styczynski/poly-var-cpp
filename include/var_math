@@ -1,3 +1,6 @@
+#ifndef _VAR_MATH
+#define _VAR_MATH
+
 #define USE_DEFAULT_STRING_BEHAVIOUR
 #define NAMESPACE_VAR_BEGIN__ namespace variable {
 #define NAMESPACE_VAR_END__ };
@@ -5,3 +8,5 @@
 #include <cmath>
 #include "var_math.h"
 #include "var_math.cpp"
+
+#endif

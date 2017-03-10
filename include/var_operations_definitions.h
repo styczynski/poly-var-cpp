@@ -1,3 +1,8 @@
+#include "var"
+
+#ifndef _VAR_OPERATIONS_DEFINITIONS_H
+#define _VAR_OPERATIONS_DEFINITIONS_H
+
 
 	#define defaultNuberOperationImplementation(OPERATOR) \
 		case VAR_TYPE_CHAR: return var( static_cast<char>(a.toChar() OPERATOR b.toChar()) ); \
@@ -279,7 +284,7 @@
 		return var( 0 );
 	}
 
-	inline var var::operator_or( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
+	inline var var::operator_or( __attribute__ ((unused)) var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
 		autohandle_functions_2(a, b, var::operator_or);
@@ -290,7 +295,7 @@
 		return var(a.toBool() || b.toBool());
 	}
 
-	inline var var::operator_and( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
+	inline var var::operator_and( __attribute__ ((unused)) var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
 		autohandle_functions_2(a, b, var::operator_and);
@@ -302,7 +307,7 @@
 	}
 
 
-	inline var var::operator_mod( var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
+	inline var var::operator_mod( __attribute__ ((unused)) var::vartypeid t, var a, var b, bool take_greater_precision_operation ) {
 
 		autohandle_references_2(a, b);
 		autohandle_functions_2(a, b, var::operator_mod);
@@ -655,7 +660,7 @@
 	}
 
 
-	inline var var::operator_comparsion_equal( var::vartypeid t, var a, var b, bool take_greater_precision_operation) {
+	inline var var::operator_comparsion_equal( __attribute__ ((unused)) var::vartypeid t, var a, var b, __attribute__ ((unused)) bool take_greater_precision_operation) {
 		return a.equals(b);
 		//return (!var::operator_comparsion_less(t, a, b).toBool() && !var::operator_comparsion_more(t, a, b).toBool());
 	}
@@ -675,3 +680,5 @@
 	#undef autohandle_NaN_single
 	#undef autohandle_Infinity_single
 	#undef greaterPrecision
+
+#endif
