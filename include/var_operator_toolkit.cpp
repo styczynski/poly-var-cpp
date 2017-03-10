@@ -27,7 +27,7 @@ NAMESPACE_VAR_BEGIN__
 
 
 
-	template <typename T>
+	/*template <typename T>
 	inline var operator-(T a, var b) {
 		return var(a)-b;
 	}
@@ -62,7 +62,7 @@ NAMESPACE_VAR_BEGIN__
 		return var(a)^b;
 	}
 
-  /*
+
 	template <typename T>
 	inline var operator+(var a, T b) {
 		return a+var(b);

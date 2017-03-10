@@ -1,6 +1,8 @@
 #ifndef _VAR
 #define _VAR
 
+#define VAR_DEFAULT_SHOW_REFERENCE_LEVEL false
+
 #define USE_DEFAULT_STRING_BEHAVIOUR
 #define NAMESPACE_VAR_BEGIN__ namespace variable {
 #define NAMESPACE_VAR_END__ };

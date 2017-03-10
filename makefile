@@ -28,7 +28,19 @@
 
 ECHO := @
 
+
+PREFFERED_CC_OVERRIDE:=
+ifneq (,$(filter config,$(MAKECMDGOALS)))
+PREFFERED_CC_OVERRIDE:=$(filter-out config,$(MAKECMDGOALS))
+endif
+PREFFERED_CC_OVERRIDE:=$(subst g++,GCPP,$(PREFFERED_CC_OVERRIDE))
+PREFFERED_CC_OVERRIDE:=$(subst gcc,GCC,$(PREFFERED_CC_OVERRIDE))
+PREFFERED_CC_OVERRIDE:=$(subst clang,CLANG,$(PREFFERED_CC_OVERRIDE))
+
 include build.config
+ifneq (,$(PREFFERED_CC_OVERRIDE))
+PREFFERED_CC:=$(PREFFERED_CC_OVERRIDE)
+endif
 
 TGTCC_AVCC=
 TGTCC_AVCC_SIZE=0
@@ -47,6 +59,7 @@ CC_SUP_ANY=
 
 COM_AUTOCONF1=
 COM_AUTOCONF2=
+COM_AUTOCONF3=
 COM_PREP_DIR1=
 COM_PREP_DIR2=
 
@@ -103,7 +116,7 @@ endif
 endif
 
 
-ifeq (true,$$( CC_SUP_$(PREFFERED_CC) ))
+ifeq (true,$(CC_SUP_${PREFFERED_CC}))
 $(info [Compiler autoconf] Selected preffered compiler: $(PREFFERED_CC))
 CC_SEL:=$(PREFFERED_CC)
 CC_SEL_FLAGS:=$()
@@ -166,6 +179,7 @@ endif
 
 COM_AUTOCONF1:=@printf "\#\n\# Autoconfig makefile\n\# Edit only if your compiler is not supported\n\#\n\n\n\# Compiler executable path:\nCC_SEL := $(CC_SEL)\n\n\# Compiler flags:\nCC_SEL_FLAGS := $(CC_SEL_FLAGS)\n\n\# Compiler intruction for building object files:\nCC_SEL_GEN_O := $(CC_SEL_GEN_O)\n\n\# Compiler intruction for building executable files:\nCC_SEL_GEN_EXE := $(CC_SEL_GEN_EXE)" > _autoconf_.config
 COM_AUTOCONF2:=@echo Autoconf file was created.
+COM_AUTOCONF3:=@printf "\n             Configured using $(CC_SEL)\n\n"
 
 CC_SEL_GEN_O:=$(subst \,,$(CC_SEL_GEN_O))
 CC_SEL_GEN_EXE:=$(subst \,,$(CC_SEL_GEN_EXE))
@@ -241,6 +255,7 @@ config: init
 init:
 	$(COM_AUTOCONF1)
 	$(COM_AUTOCONF2)
+	$(COM_AUTOCONF3)
 	$(COM_PREP_DIR1)
 	$(COM_PREP_DIR2)
 
@@ -286,6 +301,10 @@ define make-tgt-exe
 ./examples/bin/%.exe: ./examples/bin/%.o
 	$(CC_SEL_GEN_EXE)
 endef
+
+gcc:
+g++:
+clang:
 
 
 $(eval $(call make-tgt-o))

@@ -245,12 +245,12 @@ namespace var_typeconversion {
 		return makeHashmapFromArray( makeArrayFromString(obj) );
 	}
 
-	inline string var::HVarrayToReadableString(h_varray obj) {
+	inline string var::HVarrayToReadableString(h_varray obj, bool show_reference_level=VAR_DEFAULT_SHOW_REFERENCE_LEVEL) {
 		string ret = "{";
 		int itnum = 0;
 		const int size = obj.size();
 		for(auto el : obj) {
-			ret += "{" + el.first + ": " + el.second.toReadableString() + "}";
+			ret += "{" + el.first + ": " + el.second.toReadableString(show_reference_level) + "}";
 			if(itnum!=size-1) ret += ", ";
 			++itnum;
 		}
@@ -266,11 +266,11 @@ namespace var_typeconversion {
 		return ret;
 	}
 
-	inline string var::VarrayToReadableString(varray obj) {
+	inline string var::VarrayToReadableString(varray obj, bool show_reference_level=VAR_DEFAULT_SHOW_REFERENCE_LEVEL) {
 		const int len = obj.size();
 		string ret = "[";
 		for(int it=0;it<len;++it) {
-			ret += obj[it].toReadableString();
+			ret += obj[it].toReadableString(show_reference_level);
 			if(it!=len-1) ret += ", ";
 		}
 		ret += "]";
@@ -543,7 +543,8 @@ namespace var_typeconversion {
 	//define castToTypeOf(x) castToType((x).getType())
 
 	var::var( ) {
-
+		type = VAR_TYPE_NULL;
+		data = nullptr;
 	}
 
 	var::~var( ) {
@@ -630,9 +631,15 @@ namespace var_typeconversion {
 		return var::newNull();
 	}*/
 
-	inline string var::toReadableString() const {
+	inline string var::toReadableString(bool show_reference_level=VAR_DEFAULT_SHOW_REFERENCE_LEVEL) const {
 		switch(type) {
-			case VAR_TYPE_REFERENCE: return dereferenceConst().toString();
+			case VAR_TYPE_REFERENCE: {
+				if(show_reference_level) {
+					return "("+dereferenceConst().toReadableString(show_reference_level)+")";
+				} else {
+					return dereferenceConst().toReadableString(show_reference_level);
+				}
+			};
 			case VAR_TYPE_CHAR: return "'" + var_typeconversion::genericTypeToString( getAutoCastedValue<char>() ) + "'";
 			case VAR_TYPE_INT: return var_typeconversion::genericTypeToString( getAutoCastedValue<int>() );
 			case VAR_TYPE_DOUBLE: return var_typeconversion::genericTypeToString( getAutoCastedValue<double>() ) + "d";
@@ -640,8 +647,8 @@ namespace var_typeconversion {
 			case VAR_TYPE_STRING: return "\"" + getAutoCastedValue<string>() + "\"";
 			case VAR_TYPE_BOOL: return var_typeconversion::genericTypeToString( getAutoCastedValue<bool>() ) + "b";
 			case VAR_TYPE_LONG_LONG: return var_typeconversion::genericTypeToString( getAutoCastedValue<long long>() );
-			case VAR_TYPE_ARRAY: return VarrayToReadableString( getAutoCastedValue<varray>() );
-			case VAR_TYPE_HASHMAP: return HVarrayToReadableString( getAutoCastedValue<h_varray>() );
+			case VAR_TYPE_ARRAY: return VarrayToReadableString( getAutoCastedValue<varray>(), show_reference_level );
+			case VAR_TYPE_HASHMAP: return HVarrayToReadableString( getAutoCastedValue<h_varray>(), show_reference_level );
 			case VAR_TYPE_FUNCT: return "<function>";
 			case VAR_TYPE_NULL: return "null";
 			case VAR_TYPE_NAN: return "NaN";

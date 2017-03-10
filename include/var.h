@@ -246,8 +246,8 @@ class var {
 		inline static h_varray makeHashmapFromString(string obj);
 		inline static string HVarrayToString(h_varray obj);
 		inline static string VarrayToString(varray obj);
-		inline static string HVarrayToReadableString(h_varray obj);
-		inline static string VarrayToReadableString(varray obj);
+		inline static string HVarrayToReadableString(h_varray obj, bool show_reference_level);
+		inline static string VarrayToReadableString(varray obj, bool show_reference_level);
 
 		// Getters for important atom types
 		inline static var getNull();
@@ -258,8 +258,6 @@ class var {
 		inline static void delete_(var* a);
 		inline static void operator delete(void* a);
 
-		inline static vartypeid getGreaterPrecisionType(vartypeid a, vartypeid b);
-		inline static vartypeid getGreaterPrecisionType(vartypeid a, vartypeid b, vartypeid c);
 
 		inline static var operator_add( vartypeid t, var a, var b, bool take_greater_precision_operation = true );
 		inline static var operator_sub( vartypeid t, var a, var b, bool take_greater_precision_operation = true );
@@ -283,6 +281,9 @@ class var {
 		inline static var& operator_iterate( vartypeid t, var a, int index );
 
 	public:
+
+		inline static vartypeid getGreaterPrecisionType(vartypeid a, vartypeid b);
+		inline static vartypeid getGreaterPrecisionType(vartypeid a, vartypeid b, vartypeid c);
 
 		// STL-like iterator
 		class iterator {
@@ -400,7 +401,7 @@ class var {
 		static inline var fromString();
 
 		/** Converts variable to string. **/
-		inline string toReadableString() const;
+		inline string toReadableString(bool show_reference_level) const;
 		/** Converts variable to string. **/
 		inline string toString() const;
 		/** Converts variable to double. **/

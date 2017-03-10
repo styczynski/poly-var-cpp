@@ -18,7 +18,8 @@ inline var var_math::sqrt(var x) {
 }
 
 inline var var_math::pow(var x, var y) {
-  return x+y; //TODO: Corect impl
+  const var::vartypeid t = var::getGreaterPrecisionType(x.getType(), y.getType());
+  return var(  std::pow((double)x, (double)y)  ).asType(t);
 }
 
 inline var var_math::sin(var x) {

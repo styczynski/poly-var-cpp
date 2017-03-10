@@ -23,6 +23,7 @@ class var::conversion<set<T>> {
     }
 };
 
+
 NAMESPACE_VAR_END__
 
 #endif

@@ -31,14 +31,10 @@ struct custom {
 int main(void) {
 
 	try {
+		var a = 0;
+		a=(a+2);
 
-		set<int> s;
-		s.insert(1);
-		s.insert(13);
-		s.insert(5);
-
-		var v = s;
-		cout<<v<<"\n";
+  	vardbg(a);
 
 	} catch(var_exception e) {
 		cout<<"[Exception] "<<e.what()<<"\n";
