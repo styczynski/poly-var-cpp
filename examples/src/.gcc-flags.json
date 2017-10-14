@@ -1,8 +1,0 @@
-{
-  "execPath": "g++",
-  "gccDefaultCFlags": "-Wall",
-  "gccDefaultCppFlags": "-Wall -std=c++14 -Wextra",
-  "gccErrorLimit": 15,
-  "gccIncludePaths": ".,./include",
-  "gccSuppressWarnings": false
-}

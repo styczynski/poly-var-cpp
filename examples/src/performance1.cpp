@@ -10,7 +10,7 @@ int main(void) {
 
 		var_profile([]()->void {
         var k;
-        for(var i=0;i<10000;++i) {
+        for(var i=0;i<100000;++i) {
           k = 0;
           k = "ala";
         }
